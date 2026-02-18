@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface RadarProps {
@@ -140,7 +141,9 @@ export default function LandingPage() {
           <a className="nav-link" href="#groups">Groups</a>
           <a className="nav-link" href="#reviews">Reviews</a>
         </div>
-        <button className="nav-cta">Get Your Profile</button>
+        <Link href="/username-input" className="nav-cta">
+          Get Your Profile
+        </Link>
       </nav>
 
       {/* ── TICKER ──────────────────────────────────────────────────────── */}
@@ -181,8 +184,9 @@ export default function LandingPage() {
             radar chart.
           </p>
           <div className="hero-actions">
-            <button className="btn-primary">Start Assessment →</button>
-            <button className="btn-ghost">See an Example</button>
+            <Link href="/username-input" className="btn-primary">
+                Start Assessment →
+            </Link>
           </div>
           <div className="hero-platforms">
             <span className="hero-platforms-label">Connects with</span>
@@ -433,8 +437,9 @@ export default function LandingPage() {
         </h2>
         <p className="cta-sub">30 seconds. Four usernames. One polygon that's entirely you.</p>
         <div className="cta-actions">
-          <button className="btn-primary">Start Assessment →</button>
-          <button className="btn-ghost">View Example Profile</button>
+            <Link href="/username-input" className="btn-primary">
+                Start Assessment →
+            </Link>
         </div>
         <p className="cta-note">Works with any combination of supported platforms</p>
       </section>
