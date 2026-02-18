@@ -40,7 +40,7 @@ export default function UsernameInput() {
     if (!canSubmit) { setError("Enter at least one username to continue."); return; }
     const params = new URLSearchParams();
     Object.entries(values).forEach(([k, v]) => { if (v.trim()) params.set(k, v.trim()); });
-    router.push(`/loading?${params.toString()}`);
+    router.push(`/loading-page?${params.toString()}`);
   }
 
   return (
