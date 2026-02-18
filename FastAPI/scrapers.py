@@ -1,15 +1,26 @@
 import os
 import requests
 from bs4 import BeautifulSoup
+import time
 from dotenv import load_dotenv
 load_dotenv()
 
 SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
 
 def scraper_get(url: str) -> BeautifulSoup:
-    proxy_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}&render=true"
-    res = requests.get(proxy_url, timeout=60)
-    return BeautifulSoup(res.text, "html.parser")
+    proxy_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}"
+    
+    for attempt in range(3):
+        res = requests.get(proxy_url, timeout=60)
+        soup = BeautifulSoup(res.text, "html.parser")
+        
+        if soup.select(".listitem.js-listitem"):
+            return soup
+        
+        print(f"  Empty response, retrying in 5s (attempt {attempt + 1}/3)")
+        time.sleep(5)
+    
+    return soup
 
 def get_letterboxd_data(username: str) -> dict:
     RATING_MAP = {

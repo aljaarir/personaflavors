@@ -30,16 +30,6 @@ app.add_middleware(
 def root():
     return {"message": "FastAPI is running!"}
 
-import subprocess
-
-@app.get("/debug")
-def debug():
-    return {
-        "chromium": subprocess.run(["which", "chromium"], capture_output=True, text=True).stdout.strip(),
-        "chromedriver": subprocess.run(["which", "chromedriver"], capture_output=True, text=True).stdout.strip(),
-        "find_chromium": subprocess.run(["find", "/nix", "-name", "chromium", "-type", "f"], capture_output=True, text=True).stdout.strip()[:500],
-    }
-
 @app.get("/user/data")
 async def get_user_data(letterboxd_username: str, scorasong_username: str, backloggd_username: str, goodreads_username: str):
     # Placeholder for actual data fetching logic
