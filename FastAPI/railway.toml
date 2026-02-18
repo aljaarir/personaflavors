@@ -7,3 +7,7 @@ healthcheckPath = "/"
 healthcheckTimeout = 100
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
+
+
+[phases.setup]
+nixPkgs = ["chromium", "chromedriver"]
