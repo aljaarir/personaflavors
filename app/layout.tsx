@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "tasteprofile — Discover the person hiding in your taste",
+  title: "PersonaFlavor — Your taste, decoded",
   description:
-    "Connect your Letterboxd, Goodreads, Backloggd, and ScoraSong profiles. We synthesize your ratings across every medium into a deep personality archetype and bespoke visual trait map.",
-  keywords: ["personality", "taste", "letterboxd", "goodreads", "backloggd", "music", "archetype", "analysis"],
+    "Connect Letterboxd, GoodReads, Backloggd, and ScoraSong to generate a personality assessment and emotional radar chart.",
 };
 
 export default function RootLayout({
@@ -15,7 +14,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      {/*
+        suppressHydrationWarning on <body> tells React to ignore
+        attribute mismatches on this element only (one level deep).
+        This is the correct fix for browser extensions that inject
+        styles like `style="isolation: isolate"` onto <body> before
+        React hydrates — causing a server/client mismatch.
+      */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
