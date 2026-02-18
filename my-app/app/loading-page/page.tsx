@@ -15,7 +15,7 @@ function LoadingContent() {
       goodreads_username:  searchParams.get("goodreads")  ?? "",
     });
 
-    fetch(`personaflavors.railway.internal/user/data?${params.toString()}`)
+    fetch(`https://personaflavors-production.up.railway.app/user/data?${params.toString()}`)
       .then(res => res.json())
       .then(data => console.log(data))
       .catch(err => console.error(err));
