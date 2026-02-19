@@ -64,7 +64,54 @@ def get_scorasong_data(username: str) -> dict:
     return {"platform": "scorasong", "username": username, "data": "Scorasong data here"}
 
 def get_backloggd_data(username: str) -> dict:
-    return {"platform": "backloggd", "username": username, "data": "Backloggd data here"}
+    all_reviews = []
+    page_num = 1
+
+    while True:
+        url = f"https://backloggd.com/u/{username}/reviews?page={page_num}"
+        res = requests.get(f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}", timeout=60)
+        soup = BeautifulSoup(res.text, "html.parser")
+
+        # Each review is a .review-card, paired with a .game-name above it
+        cards = soup.select(".review-card")
+        if not cards:
+            break
+
+        for card in cards:
+            # Title is in the .game-name div just before this card
+            game_name_el = card.find_previous(".game-name")
+            title = game_name_el.select_one("h3").text.strip() if game_name_el else ""
+
+            # Rating: stars-top width is a percentage out of 100
+            # 100% = 5 stars, so we divide by 20 to get star value
+            # e.g. width:70% -> 70/20 = 3.5 stars
+            stars = None
+            stars_el = card.select_one(".stars-top")
+            if stars_el:
+                width = stars_el.get("style", "")  # e.g. "width:70%"
+                percent = width.replace("width:", "").replace("%", "").strip()
+                if percent:
+                    stars = float(percent) / 20
+
+            # Review text and date
+            review_el = card.select_one(".card-text")
+            date_el = card.select_one("time.local-time-tooltip")
+
+            all_reviews.append({
+                "title": title,
+                "stars": stars,
+                "review_text": review_el.text.strip() if review_el else "",
+                "play_date": date_el["datetime"] if date_el else "",
+            })
+
+        # Stop if there's no next page link
+        if not soup.select_one("nav.pagy a[aria-label='Next']"):
+            break
+
+        page_num += 1
+        time.sleep(2)
+
+    return {"platform": "backloggd", "username": username, "reviews": all_reviews}
 
 def get_goodreads_data(username: str) -> dict:
     return {"platform": "goodreads", "username": username, "data": "Goodreads data here"}
