@@ -7,21 +7,6 @@ load_dotenv()
 
 SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
 
-def scraper_get(url: str) -> BeautifulSoup:
-    proxy_url = f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}"
-    
-    for attempt in range(3):
-        res = requests.get(proxy_url, timeout=60)
-        soup = BeautifulSoup(res.text, "html.parser")
-        
-        if soup.select(".listitem.js-listitem"):
-            return soup
-        
-        print(f"  Empty response, retrying in 5s (attempt {attempt + 1}/3)")
-        time.sleep(5)
-    
-    return soup
-
 def get_letterboxd_data(username: str) -> dict:
     RATING_MAP = {
         "1": 0.5, "2": 1.0, "3": 1.5, "4": 2.0, "5": 2.5,
@@ -34,8 +19,12 @@ def get_letterboxd_data(username: str) -> dict:
     while True:
         url = f"https://letterboxd.com/{username}/reviews/films/page/{page_num}/"
         print(f"Scraping page {page_num}: {url}")
-        soup = scraper_get(url)
 
+        res = requests.get(
+            f"http://api.scraperapi.com?api_key={SCRAPER_API_KEY}&url={url}",
+            timeout=60
+        )
+        soup = BeautifulSoup(res.text, "html.parser")
         items = soup.select(".listitem.js-listitem")
         print(f"  Found {len(items)} items")
 
@@ -73,6 +62,7 @@ def get_letterboxd_data(username: str) -> dict:
             break
 
         page_num += 1
+        time.sleep(2)
 
     print(f"Total reviews scraped: {len(all_reviews)}")
     return {"platform": "letterboxd", "username": username, "reviews": all_reviews}
@@ -86,4 +76,3 @@ def get_backloggd_data(username: str) -> dict:
 
 def get_goodreads_data(username: str) -> dict:
     return {"platform": "goodreads", "username": username, "data": "Goodreads data here"}
-
