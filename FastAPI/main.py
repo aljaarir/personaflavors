@@ -9,7 +9,7 @@ import requests
 from functools import wraps
 
 # Custom modules
-from scrapers import get_letterboxd_data
+from scrapers import get_backloggd_data, get_letterboxd_data
 
 
 
@@ -36,13 +36,13 @@ async def get_user_data(letterboxd_username: str, scorasong_username: str, backl
 
 	letterbox_data = get_letterboxd_data(letterboxd_username)
 	# scorasong_data = get_scorasong_data(scorasong_username)
-	# backloggd_data = get_backloggd_data(backloggd_username)
+	backloggd_data = get_backloggd_data(backloggd_username)
 	# goodreads_data = get_goodreads_data(goodreads_username)
 
 	return {
 		"letterboxd": {"username": letterboxd_username, "data": letterbox_data},
 		"scorasong": {"username": scorasong_username, "data": "Scorasong data here"},
-		"backloggd": {"username": backloggd_username, "data": "Backloggd data here"},
+		"backloggd": {"username": backloggd_username, "data": backloggd_data},
 		"goodreads": {"username": goodreads_username, "data": "Goodreads data here"}
 	}
 
