@@ -143,7 +143,9 @@ def get_backloggd_data(username: str) -> dict:
     return {"platform": "backloggd", "username": username, "reviews": all_reviews}
 
 
-def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict, goodreads_data: dict) -> dict:
-    # use Claude Private Mode via Langchain to analyze the data and return insights
-    return {"persona": "Chaotic Demon", "insights": ["Loves horror movies", "Prefers indie games", "Enjoys dark fantasy novels"]}
-    
+def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict) -> dict:
+    return {
+        "persona": "The Signal",
+        "description": "Everything you consume is data toward an ongoing self-construction. You're building something — you're not sure what — and your taste is the architecture.",
+        "stats": {"complexity": 89, "darkness": 66, "mainstream": 29, "emotional": 77, "experimental": 82}
+    }

@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 // ─── Platform config ──────────────────────────────────────────────────────────
 const PLATFORMS = [
   { id: "letterboxd", name: "Letterboxd", icon: "🎬", color: "var(--anger)",   hint: "letterboxd.com/" },
-  { id: "goodreads",  name: "GoodReads",  icon: "📚", color: "var(--accent)",  hint: "goodreads.com/" },
   { id: "backloggd",  name: "Backloggd",  icon: "🎮", color: "var(--dark)",    hint: "backloggd.com/u/" },
   { id: "scorasong",  name: "ScoraSong",  icon: "🎵", color: "var(--serious)", hint: "scorasong.com/" },
 ];
@@ -17,7 +16,7 @@ type Values = Record<string, string>;
 export default function UsernameInput() {
   const router = useRouter();
   const [values, setValues] = useState<Values>({
-    letterboxd: "", goodreads: "", backloggd: "", scorasong: "",
+    letterboxd: "", backloggd: "", scorasong: "",
   });
   const [focused, setFocused] = useState<string | null>(null);
   const [error, setError]     = useState("");
@@ -32,7 +31,7 @@ export default function UsernameInput() {
   }
 
   function handleClear() {
-    setValues({ letterboxd: "", goodreads: "", backloggd: "", scorasong: "" });
+    setValues({ letterboxd: "", backloggd: "", scorasong: "" });
     setError("");
   }
 

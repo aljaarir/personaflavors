@@ -37,19 +37,36 @@ function LoadingContent() {
       letterboxd_username: searchParams.get("letterboxd") ?? "",
       scorasong_username: searchParams.get("scorasong") ?? "",
       backloggd_username: searchParams.get("backloggd") ?? "",
-      goodreads_username: searchParams.get("goodreads") ?? "",
     });
 
+    let cancelled = false;
+    let pushTimeout: number | undefined;
+
     fetch(`https://personaflavors-production.up.railway.app/user/data?${params.toString()}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
+        if (cancelled) return;
         setDone(true);
-        setTimeout(() => {
-          router.push(`/results?data=${encodeURIComponent(JSON.stringify(data.analysis.data))}`);
+        pushTimeout = window.setTimeout(() => {
+          const payload = {
+            persona: data.analysis?.persona,
+            description: data.analysis?.description,
+            stats: data.analysis?.stats,
+            total_count: data.total_count,
+          };
+          router.push(`/results?data=${encodeURIComponent(JSON.stringify(payload))}`);
         }, 800);
       })
       .catch((err) => console.error(err));
-  }, []);
+
+    return () => {
+      cancelled = true;
+      if (pushTimeout) clearTimeout(pushTimeout);
+    };
+  }, [searchParams, router]);
 
   const progress = done ? 100 : ((stageIndex + 1) / STAGES.length) * 85;
 

@@ -67,7 +67,7 @@ function Radar({ values, color, size = 120 }: RadarProps) {
 
 // Emotion axes: Humor · Dark/Sad · Romantic · Serious · Anger · Whimsy
 const TICKER_ITEMS = [
-  "Letterboxd", "GoodReads", "Backloggd", "ScoraSong",
+  "Letterboxd", "Backloggd", "ScoraSong",
   "Personality decoded", "Taste is data", "6 dimensions",
   "Humor · Dark · Romantic · Serious · Anger · Whimsy",
   "Find your flavor", "Cross-platform analysis",
@@ -94,7 +94,7 @@ const REVIEWS = [
   {
     user: "nocturnalreader", av: "NR", avColor: "#c8a96e",
     body: "Called me a 'melancholic romantic with hyper-analytical tendencies.' Somehow the most accurate personality read I've ever gotten — and I've done every Myers-Briggs variant.",
-    group: "The Slow Burn", sources: ["Letterboxd", "GoodReads"],
+    group: "The Slow Burn", sources: ["Letterboxd"],
     radar: [30, 82, 75, 78, 20, 50], radarColor: "#9b8de8",
   },
   {
@@ -106,7 +106,7 @@ const REVIEWS = [
   {
     user: "quietpages", av: "QP", avColor: "#6bb4d4",
     body: "The radar showing my Serious vs Humor breakdown was humbling. I consume a lot but digest slowly. Very true, unfortunately.",
-    group: "The Archivist", sources: ["GoodReads", "Letterboxd", "ScoraSong"],
+    group: "The Archivist", sources: ["Letterboxd", "ScoraSong"],
     radar: [28, 55, 40, 88, 35, 70], radarColor: "#c8a96e",
   },
   {
@@ -178,7 +178,7 @@ export default function LandingPage() {
             <br />about who you are
           </h1>
           <p className="hero-sub">
-            Connect Letterboxd, GoodReads, Backloggd, and ScoraSong.
+            Connect Letterboxd, Backloggd, and ScoraSong.
             PersonaFlavor cross-references everything you've consumed to
             generate a personality profile — visualized as a unique emotional
             radar chart.
@@ -190,7 +190,7 @@ export default function LandingPage() {
           </div>
           <div className="hero-platforms">
             <span className="hero-platforms-label">Connects with</span>
-            {["Letterboxd", "GoodReads", "Backloggd", "ScoraSong"].map((p) => (
+            {["Letterboxd", "Backloggd", "ScoraSong"].map((p) => (
               <span key={p} className="platform-pill">{p}</span>
             ))}
           </div>

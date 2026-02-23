@@ -32,18 +32,26 @@ def root():
 
 @app.get("/user/data")
 async def get_user_data(letterboxd_username: str, scorasong_username: str, backloggd_username: str):
-    # Placeholder for actual data fetching logic
+    letterboxd_data = get_letterboxd_data(letterboxd_username)
+    scorasong_data = await get_scorasong_data(scorasong_username)
+    backloggd_data = get_backloggd_data(backloggd_username)
 
-	letterbox_data = get_letterboxd_data(letterboxd_username)
-	scorasong_data = await get_scorasong_data(scorasong_username)
-	backloggd_data = get_backloggd_data(backloggd_username)
+    total_count = (
+        len(letterboxd_data.get("reviews", [])) +
+        len(scorasong_data.get("data", {}).get("songs", [])) +
+        len(scorasong_data.get("data", {}).get("albums", [])) +
+        len(backloggd_data.get("reviews", []))
+    )
 
-	return {
-		"letterboxd": {"username": letterboxd_username, "data": letterbox_data},
-		"scorasong": {"username": scorasong_username, "data": scorasong_data},
-		"backloggd": {"username": backloggd_username, "data": backloggd_data},
-		"analysis": {"data": get_final_analysis(letterbox_data, scorasong_data, backloggd_data, None)}
-	}
+    analysis = get_final_analysis(letterboxd_data, scorasong_data, backloggd_data)
+
+    return {
+        "letterboxd": letterboxd_data,
+        "scorasong": scorasong_data,
+        "backloggd": backloggd_data,
+        "analysis": analysis,
+        "total_count": total_count
+    }
 
 
 
