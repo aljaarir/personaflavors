@@ -45,7 +45,7 @@ function LoadingContent() {
       .then((data) => {
         setDone(true);
         setTimeout(() => {
-          router.push(`/results?data=${encodeURIComponent(JSON.stringify(data))}`);
+          router.push(`/results?data=${encodeURIComponent(JSON.stringify(data.analysis.data))}`);
         }, 800);
       })
       .catch((err) => console.error(err));

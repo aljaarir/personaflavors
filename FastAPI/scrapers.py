@@ -145,5 +145,5 @@ def get_backloggd_data(username: str) -> dict:
 
 def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict, goodreads_data: dict) -> dict:
     # use Claude Private Mode via Langchain to analyze the data and return insights
-    return {"Persona": "Chaotic Demon", "Insights": ["Loves horror movies", "Prefers indie games", "Enjoys dark fantasy novels"]}
+    return {"persona": "Chaotic Demon", "insights": ["Loves horror movies", "Prefers indie games", "Enjoys dark fantasy novels"]}
     
