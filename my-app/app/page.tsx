@@ -258,7 +258,7 @@ export default function LandingPage() {
         </div>
         <div className="how-steps">
           {[
-            { n: "01", icon: "🔗", title: "Enter Usernames", desc: "Paste your handles for any combination of the four platforms. No passwords, no OAuth — just names." },
+            { n: "01", icon: "🔗", title: "Enter Usernames", desc: "Paste your handles for any combination of the three platforms. No passwords, no OAuth — just names." },
             { n: "02", icon: "🧮", title: "We Parse Patterns", desc: "Ratings, dates, genres, completion — we extract emotional signals from your full history." },
             { n: "03", icon: "🕸", title: "Cross-Platform Map", desc: "The threads between your film and music taste say more than either alone. We find those threads." },
             { n: "04", icon: "◈", title: "Your Flavor Profile", desc: "A Flavor Group, a radar chart, and a written assessment — a profile that actually sounds like you." },
@@ -435,7 +435,7 @@ export default function LandingPage() {
         <h2 className="cta-title">
           Ready to decode your <em>flavor?</em>
         </h2>
-        <p className="cta-sub">30 seconds. Four usernames. One polygon that's entirely you.</p>
+        <p className="cta-sub">30 seconds. Three usernames. One polygon that's entirely you.</p>
         <div className="cta-actions">
             <Link href="/username-input" className="btn-primary">
                 Start Assessment →
