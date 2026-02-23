@@ -11,7 +11,8 @@ beautifulsoup4>=4.12.0
 asyncpg
 requests>=2.31.0
 
-
+# Da
+supabase
 
 # NLP
 spacy>=3.8.0
