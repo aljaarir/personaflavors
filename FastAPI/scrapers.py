@@ -2,17 +2,46 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import time
-from supabase import create_client
 from dotenv import load_dotenv
-import xml.etree.ElementTree as ET
+import psycopg2
 load_dotenv()
 
 SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
+DATABASE_URL = os.getenv("DATABASE_URL")  # postgres connection string from Supabase
 
-supabase = create_client(
-    os.getenv("SUPABASE_URL"),
-    os.getenv("SUPABASE_KEY")
-)
+def get_scorasong_data(username: str) -> dict:
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+
+    # Get user ID from username
+    cur.execute("SELECT id FROM scora_users WHERE username = %s", (username,))
+    user = cur.fetchone()
+
+    if not user:
+        cur.close()
+        conn.close()
+        return {"platform": "scorasong", "username": username, "data": {"albums": [], "songs": []}}
+
+    user_id = user[0]
+
+    # Get albums and songs
+    cur.execute("SELECT * FROM album_ratings WHERE user_id = %s", (user_id,))
+    albums = cur.fetchall()
+
+    cur.execute("SELECT * FROM song_ratings WHERE user_id = %s", (user_id,))
+    songs = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return {
+        "platform": "scorasong",
+        "username": username,
+        "data": {
+            "albums": [dict(row) for row in albums],
+            "songs": [dict(row) for row in songs],
+        }
+    }
 
 
 def get_letterboxd_data(username: str) -> dict:
@@ -67,27 +96,6 @@ def get_letterboxd_data(username: str) -> dict:
 
     return {"platform": "letterboxd", "username": username, "reviews": all_reviews}
 
-
-def get_scorasong_data(username: str) -> dict:
-    # Look up the user's UUID from their username in scora_users
-    user = supabase.table("scora_users").select("id").eq("username", username).single().execute()
-
-    if not user.data:
-        return {"platform": "scorasong", "username": username, "data": {"albums": [], "songs": []}}
-
-    user_id = user.data["id"]
-
-    albums = supabase.table("album_ratings").select("*").eq("user_id", user_id).execute()
-    songs = supabase.table("song_ratings").select("*").eq("user_id", user_id).execute()
-
-    return {
-        "platform": "scorasong",
-        "username": username,
-        "data": {
-            "albums": albums.data,
-            "songs": songs.data,
-        }
-    }
 
 def get_backloggd_data(username: str) -> dict:
     all_reviews = []
