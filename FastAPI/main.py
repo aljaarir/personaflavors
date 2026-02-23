@@ -35,14 +35,14 @@ async def get_user_data(letterboxd_username: str, scorasong_username: str, backl
     # Placeholder for actual data fetching logic
 
 	letterbox_data = get_letterboxd_data(letterboxd_username)
-	scorasong_data = get_scorasong_data(scorasong_username)
+	scorasong_data = await get_scorasong_data(scorasong_username)
 	backloggd_data = get_backloggd_data(backloggd_username)
 
 	return {
 		"letterboxd": {"username": letterboxd_username, "data": letterbox_data},
-		"scorasong": {"username": scorasong_username, "data": "Scorasong data here"},
+		"scorasong": {"username": scorasong_username, "data": scorasong_data},
 		"backloggd": {"username": backloggd_username, "data": backloggd_data},
-		"analysis": {"data": get_final_analysis(letterbox_data, None, backloggd_data, None)}
+		"analysis": {"data": get_final_analysis(letterbox_data, scorasong_data, backloggd_data, None)}
 	}
 
 

@@ -3,43 +3,38 @@ import requests
 from bs4 import BeautifulSoup
 import time
 from dotenv import load_dotenv
-import psycopg2
+import asyncpg
 load_dotenv()
 
 SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")  # postgres connection string from Supabase
 
-def get_scorasong_data(username: str) -> dict:
-    conn = psycopg2.connect(DATABASE_URL)
-    cur = conn.cursor()
+async def connect_db():
+    return await asyncpg.connect(DATABASE_URL, ssl="require", command_timeout=60, timeout=60, statement_cache_size=0)
 
-    # Get user ID from username
-    cur.execute("SELECT id FROM scora_users WHERE username = %s", (username,))
-    user = cur.fetchone()
+async def get_scorasong_data(username: str) -> dict:
+    conn = await connect_db()
+
+    # First get the user's UUID from their username
+    user = await conn.fetchrow("SELECT id FROM scora_users WHERE username = $1", username)
 
     if not user:
-        cur.close()
-        conn.close()
+        await conn.close()
         return {"platform": "scorasong", "username": username, "data": {"albums": [], "songs": []}}
 
-    user_id = user[0]
+    user_id = user["id"]
 
-    # Get albums and songs
-    cur.execute("SELECT * FROM album_ratings WHERE user_id = %s", (user_id,))
-    albums = cur.fetchall()
+    album_rows = await conn.fetch("SELECT * FROM album_ratings WHERE user_id = $1", user_id)
+    song_rows = await conn.fetch("SELECT * FROM song_ratings WHERE user_id = $1", user_id)
 
-    cur.execute("SELECT * FROM song_ratings WHERE user_id = %s", (user_id,))
-    songs = cur.fetchall()
-
-    cur.close()
-    conn.close()
+    await conn.close()
 
     return {
         "platform": "scorasong",
         "username": username,
         "data": {
-            "albums": [dict(row) for row in albums],
-            "songs": [dict(row) for row in songs],
+            "albums": [dict(row) for row in album_rows],
+            "songs": [dict(row) for row in song_rows],
         }
     }
 
