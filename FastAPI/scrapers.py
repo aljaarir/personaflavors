@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import time
 from dotenv import load_dotenv
 import asyncpg
-from openrouter import OpenRouter
 import json
 
 load_dotenv()
