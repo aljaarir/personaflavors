@@ -502,9 +502,9 @@ function ResultsContent() {
           <div className="nav-logo">Persona<em>Flavor</em></div>
           <div className="nav-links">
             <a href="/" className="nav-link">Home</a>
-            <a href="/input" className="nav-link">Try Again</a>
+            <a href="/username-input" className="nav-link">Try Again</a>
           </div>
-          <a href="/input" className="nav-cta">New Profile</a>
+          <a href="/username-input" className="nav-cta">New Profile</a>
         </nav>
 
         {/* Hero */}
