@@ -4,10 +4,17 @@ from bs4 import BeautifulSoup
 import time
 from dotenv import load_dotenv
 import asyncpg
+from openrouter import OpenRouter
+import json
+
 load_dotenv()
+
+# Custom personas for analysis
+from personas import PERSONAS
 
 SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
 DATABASE_URL = os.getenv("DATABASE_URL")  # postgres connection string from Supabase
+
 
 async def connect_db():
     return await asyncpg.connect(DATABASE_URL, ssl="require", command_timeout=60, timeout=60, statement_cache_size=0)
@@ -144,8 +151,51 @@ def get_backloggd_data(username: str) -> dict:
 
 
 def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict) -> dict:
-    return {
-        "persona": "The Signal",
-        "description": "Everything you consume is data toward an ongoing self-construction. You're building something — you're not sure what — and your taste is the architecture.",
-        "stats": {"complexity": 89, "darkness": 66, "mainstream": 29, "emotional": 77, "experimental": 82}
-    }
+    # Format personas as a clean numbered list for the prompt
+    personas_text = "\n".join(
+        f"{p['id']}. {p['title']} — {p['description']}"
+        for p in PERSONAS
+    )
+
+    with OpenRouter(api_key=os.getenv("OPENROUTER_API_KEY")) as client:
+        response = client.chat.send(
+            model="stepfun/step-3.5-flash:free",
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"""Analyze this user's taste profile across movies, games, and music.
+
+                    LETTERBOXD (movies): {letterboxd_data}
+                    BACKLOGGD (games): {backloggd_data}
+                    SCORASONG (music): {scorasong_data}
+
+                    Based on their ratings and reviews, score them 0-100 on:
+                    - complexity: do they prefer complex/layered vs simple works?
+                    - darkness: do they prefer dark/heavy vs light/fun works?
+                    - mainstream: do they prefer popular vs obscure works?
+                    - emotional: how emotionally driven are their preferences?
+                    - experimental: do they seek unconventional works?
+
+                    Then pick the single best matching persona from this list:
+
+                    {personas_text}
+
+                    Respond ONLY with valid JSON, no markdown, no explanation:
+                    {{
+                    "persona": "<exact persona title>",
+                    "description": "<exact persona description>",
+                    "stats": {{
+                        "complexity": 0-100,
+                        "darkness": 0-100,
+                        "mainstream": 0-100,
+                        "emotional": 0-100,
+                        "experimental": 0-100
+                    }}
+                    }}"""
+                }
+            ]
+        )
+
+    text = response.choices[0].message.content.strip()
+    text = text.replace("```json", "").replace("```", "").strip()
+    return json.loads(text)
