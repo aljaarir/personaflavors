@@ -151,51 +151,44 @@ def get_backloggd_data(username: str) -> dict:
 
 
 def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict) -> dict:
-    # Format personas as a clean numbered list for the prompt
     personas_text = "\n".join(
         f"{p['id']}. {p['title']} — {p['description']}"
         for p in PERSONAS
     )
 
-    with OpenRouter(api_key=os.getenv("OPENROUTER_API_KEY")) as client:
-        response = client.chat.send(
-            model="stepfun/step-3.5-flash:free",
-            messages=[
+    response = requests.post(
+        url="https://openrouter.ai/api/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+            "X-Title": "PersonaFlavor",
+        },
+        data=json.dumps({
+            "model": "stepfun/step-3.5-flash:free",
+            "messages": [
                 {
                     "role": "user",
                     "content": f"""Analyze this user's taste profile across movies, games, and music.
 
-                    LETTERBOXD (movies): {letterboxd_data}
-                    BACKLOGGD (games): {backloggd_data}
-                    SCORASONG (music): {scorasong_data}
+                    LETTERBOXD: {letterboxd_data}
+                    BACKLOGGD: {backloggd_data}
+                    SCORASONG: {scorasong_data}
 
-                    Based on their ratings and reviews, score them 0-100 on:
-                    - complexity: do they prefer complex/layered vs simple works?
-                    - darkness: do they prefer dark/heavy vs light/fun works?
-                    - mainstream: do they prefer popular vs obscure works?
-                    - emotional: how emotionally driven are their preferences?
-                    - experimental: do they seek unconventional works?
-
-                    Then pick the single best matching persona from this list:
+                    Score them 0-100 on: complexity, darkness, mainstream, emotional, experimental.
+                    Then pick the best matching persona from this list:
 
                     {personas_text}
 
-                    Respond ONLY with valid JSON, no markdown, no explanation:
+                    Respond ONLY with valid JSON, no markdown:
                     {{
-                    "persona": "<exact persona title>",
-                    "description": "<exact persona description>",
-                    "stats": {{
-                        "complexity": 0-100,
-                        "darkness": 0-100,
-                        "mainstream": 0-100,
-                        "emotional": 0-100,
-                        "experimental": 0-100
-                    }}
+                    "persona": "<exact title>",
+                    "description": "<exact description>",
+                    "stats": {{"complexity": 0, "darkness": 0, "mainstream": 0, "emotional": 0, "experimental": 0}}
                     }}"""
                 }
             ]
-        )
+        })
+    )
 
-    text = response.choices[0].message.content.strip()
+    text = response.json()["choices"][0]["message"]["content"].strip()
     text = text.replace("```json", "").replace("```", "").strip()
     return json.loads(text)
