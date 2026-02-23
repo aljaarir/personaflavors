@@ -24,8 +24,8 @@ async def get_scorasong_data(username: str) -> dict:
 
     user_id = user["id"]
 
-    album_rows = await conn.fetch("SELECT * FROM album_ratings WHERE user_id = $1", user_id)
-    song_rows = await conn.fetch("SELECT * FROM song_ratings WHERE user_id = $1", user_id)
+    album_rows = await conn.fetch("SELECT weighted_score, genres FROM album_ratings WHERE user_id = $1", user_id)
+    song_rows = await conn.fetch("SELECT weighted_score, genres FROM song_ratings WHERE user_id = $1", user_id)
 
     await conn.close()
 
@@ -145,5 +145,5 @@ def get_backloggd_data(username: str) -> dict:
 
 def get_final_analysis(letterboxd_data: dict, scorasong_data: dict, backloggd_data: dict, goodreads_data: dict) -> dict:
     # use Claude Private Mode via Langchain to analyze the data and return insights
-    pass
+    return {"Persona": "Chaotic Demon", "Insights": ["Loves horror movies", "Prefers indie games", "Enjoys dark fantasy novels"]}
     
