@@ -37,13 +37,21 @@ def get_letterboxd_data(username: str) -> dict:
     return {"platform": "letterboxd", "username": username, "reviews": all_reviews}
 
 
-def get_scorasong_data(user_id: str) -> dict:
+def get_scorasong_data(username: str) -> dict:
+    # Look up the user's UUID from their username in scora_users
+    user = supabase.table("scora_users").select("id").eq("username", username).single().execute()
+
+    if not user.data:
+        return {"platform": "scorasong", "username": username, "data": {"albums": [], "songs": []}}
+
+    user_id = user.data["id"]
+
     albums = supabase.table("album_ratings").select("*").eq("user_id", user_id).execute()
     songs = supabase.table("song_ratings").select("*").eq("user_id", user_id).execute()
 
     return {
         "platform": "scorasong",
-        "user_id": user_id,
+        "username": username,
         "data": {
             "albums": albums.data,
             "songs": songs.data,
