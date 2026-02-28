@@ -44,11 +44,15 @@ function LoadingContent() {
 
     fetch(`https://personaflavors-production.up.railway.app/user/data?${params.toString()}`)
       .then((res) => {
+        if (res.status === 403) {
+          router.push("/blocked");
+          return null;
+        }
         if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        if (cancelled) return;
+        if (!data || cancelled) return;
         setDone(true);
         pushTimeout = window.setTimeout(() => {
           const payload = {
@@ -61,11 +65,6 @@ function LoadingContent() {
         }, 800);
       })
       .catch((err) => console.error(err));
-
-    return () => {
-      cancelled = true;
-      if (pushTimeout) clearTimeout(pushTimeout);
-    };
   }, [searchParams, router]);
 
   const progress = done ? 100 : ((stageIndex + 1) / STAGES.length) * 85;

@@ -9,7 +9,7 @@ import requests
 from functools import wraps
 
 # Custom modules
-from scrapers import get_backloggd_data, get_final_analysis, get_letterboxd_data, get_scorasong_data
+from scrapers import get_backloggd_data, get_final_analysis, get_letterboxd_data, get_scorasong_data, validate_scorasong_username
 
 
 
@@ -32,6 +32,10 @@ def root():
 
 @app.get("/user/data")
 async def get_user_data(letterboxd_username: str, scorasong_username: str, backloggd_username: str):
+    # Block if no scorasong username or doesn't exist in DB
+    if not scorasong_username or not await validate_scorasong_username(scorasong_username):
+        raise HTTPException(status_code=403, detail="scorasong_required")
+    
     letterboxd_data = get_letterboxd_data(letterboxd_username)
     scorasong_data = await get_scorasong_data(scorasong_username)
     backloggd_data = get_backloggd_data(backloggd_username)

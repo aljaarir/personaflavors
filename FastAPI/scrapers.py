@@ -18,6 +18,18 @@ DATABASE_URL = os.getenv("DATABASE_URL")  # postgres connection string from Supa
 async def connect_db():
     return await asyncpg.connect(DATABASE_URL, ssl="require", command_timeout=60, timeout=60, statement_cache_size=0)
 
+
+# Force user to have a scorasong account
+async def validate_scorasong_username(username: str) -> bool:
+    try:
+        conn = await connect_db()
+        user = await conn.fetchrow("SELECT id FROM scora_users WHERE username = $1", username)
+        await conn.close()
+        return user is not None
+    except Exception as e:
+        print(f"Error validating ScoraSong username {username}: {e}")
+        return False
+    
 async def get_scorasong_data(username: str) -> dict:
     print(f"Fetching ScoraSong data for {username}...")
     try:
