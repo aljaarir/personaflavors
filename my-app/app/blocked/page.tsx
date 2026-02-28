@@ -212,7 +212,7 @@ export default function BlockedPage() {
           {/* Actions — same structure as .submit-row */}
           <div className="blocked-actions">
             <a
-              href="https://scorasong.com/signup"
+              href="https://scorasong.com"
               className="blocked-cta"
               target="_blank"
               rel="noopener noreferrer"
