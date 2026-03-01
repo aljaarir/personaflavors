@@ -32,9 +32,11 @@ def root():
 
 @app.get("/user/data")
 async def get_user_data(letterboxd_username: str, scorasong_username: str, backloggd_username: str):
-    # Block if no scorasong username or doesn't exist in DB
-    if not scorasong_username or not await validate_scorasong_username(scorasong_username):
-        raise HTTPException(status_code=403, detail="scorasong_required")
+    if not scorasong_username:
+        raise HTTPException(status_code=403, detail="scorasong_missing")
+
+    if not await validate_scorasong_username(scorasong_username):
+        raise HTTPException(status_code=403, detail="scorasong_invalid")
     
     letterboxd_data = get_letterboxd_data(letterboxd_username)
     scorasong_data = await get_scorasong_data(scorasong_username)

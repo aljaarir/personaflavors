@@ -1,6 +1,22 @@
 "use client";
 
-export default function BlockedPage() {
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function BlockedContent() {
+  const searchParams = useSearchParams();
+  const reason = searchParams.get("reason");
+  const isInvalid = reason === "scorasong_invalid";
+
+  const eyebrow = isInvalid ? "Invalid ScoraSong username" : "ScoraSong required";
+  const glyph = isInvalid ? "?" : "⊘";
+  const heading = isInvalid
+    ? <><em>Username not found</em></>
+    : <>Your music is<br /><em>the missing piece</em></>;
+  const subtitle = isInvalid
+    ? "We couldn't find a ScoraSong account with that username. Double-check your spelling, or sign up if you don't have one yet."
+    : "PersonaFlavor needs your listening history to build an accurate taste profile. Without ScoraSong, the analysis is incomplete.";
+
   return (
     <>
       <style>{`
@@ -23,7 +39,6 @@ export default function BlockedPage() {
           z-index: 1;
         }
 
-        /* Header — same as .input-header */
         .blocked-header {
           margin-bottom: 36px;
           animation: slideUp 0.7s 0.05s cubic-bezier(0.22,1,0.36,1) both;
@@ -50,9 +65,9 @@ export default function BlockedPage() {
           font-size: 0.85rem;
           color: var(--text-2);
           line-height: 1.7;
+          margin-top: 10px;
         }
 
-        /* Pitch rows — same pattern as .how-step but stacked */
         .blocked-pitch {
           display: flex;
           flex-direction: column;
@@ -107,7 +122,6 @@ export default function BlockedPage() {
           line-height: 1.55;
         }
 
-        /* Submit row — reuses exact globals classes */
         .blocked-actions {
           display: flex;
           gap: 10px;
@@ -159,7 +173,6 @@ export default function BlockedPage() {
       `}</style>
 
       <div className="blocked-page">
-        {/* Ambient — exact same as input page */}
         <div className="hero-ambient">
           <div className="hero-orb a" style={{ background: "radial-gradient(circle, rgba(232,106,125,0.08) 0%, transparent 70%)" }} />
           <div className="hero-orb b" />
@@ -167,36 +180,29 @@ export default function BlockedPage() {
 
         <div className="blocked-card">
 
-          {/* Header */}
           <div className="blocked-header">
             <div className="eyebrow" style={{ marginBottom: 16, justifyContent: "center" }}>
               <span className="eyebrow-line" style={{ background: "var(--romantic)" }} />
-              ScoraSong required
+              {eyebrow}
               <span className="eyebrow-line" style={{ background: "var(--romantic)" }} />
             </div>
-            <span className="blocked-glyph">⊘</span>
-            <div className="blocked-title">
-              Your music is<br /><em>the missing piece</em>
-            </div>
-            <div className="blocked-subtitle" style={{ marginTop: 10 }}>
-              PersonaFlavor needs your listening history to build an accurate taste profile.
-              Without ScoraSong, the analysis is incomplete.
-            </div>
+            <span className="blocked-glyph">{glyph}</span>
+            <div className="blocked-title">{heading}</div>
+            <div className="blocked-subtitle">{subtitle}</div>
           </div>
 
-          {/* Pitch rows — same as platform-row layout */}
           <div className="blocked-pitch">
             <div className="blocked-pitch-row">
               <div className="blocked-pitch-icon">🎵</div>
               <div className="blocked-pitch-col">
                 <div className="blocked-pitch-label">Music reveals the most</div>
-                <div className="blocked-pitch-body">Listening habits expose taste dimensions that movies and games alone can't capture. It's the dimension that makes your profile real.</div>
+                <div className="blocked-pitch-body">Listening habits expose taste dimensions that movies and games alone can&apos;t capture. It&apos;s what makes your profile real.</div>
               </div>
             </div>
             <div className="blocked-pitch-row">
               <div className="blocked-pitch-icon">📊</div>
               <div className="blocked-pitch-col">
-                <div className="blocked-pitch-label">Rate songs & albums</div>
+                <div className="blocked-pitch-label">Rate songs &amp; albums</div>
                 <div className="blocked-pitch-body">ScoraSong lets you log what you listen to with ratings and reviews — your musical memory, organized.</div>
               </div>
             </div>
@@ -209,7 +215,6 @@ export default function BlockedPage() {
             </div>
           </div>
 
-          {/* Actions — same structure as .submit-row */}
           <div className="blocked-actions">
             <a
               href="https://scorasong.com"
@@ -217,19 +222,29 @@ export default function BlockedPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Join ScoraSong — it&apos;s free →
+              {isInvalid ? "Sign up for ScoraSong →" : "Join ScoraSong — it's free →"}
             </a>
-            <a href="/input" className="clear-btn">
+            <a href="/username-input" className="clear-btn">
               ← Back
             </a>
           </div>
 
           <div className="blocked-note">
-            Already have an account? Go back and enter your ScoraSong username.
+            {isInvalid
+              ? "Check your username spelling, or create a new account above."
+              : "Already have an account? Go back and enter your ScoraSong username."}
           </div>
 
         </div>
       </div>
     </>
+  );
+}
+
+export default function BlockedPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100svh", background: "var(--bg)" }} />}>
+      <BlockedContent />
+    </Suspense>
   );
 }

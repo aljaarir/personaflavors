@@ -45,8 +45,10 @@ function LoadingContent() {
     fetch(`https://personaflavors-production.up.railway.app/user/data?${params.toString()}`)
       .then((res) => {
         if (res.status === 403) {
-          router.push("/blocked");
-          return null;
+          return res.json().then((err: { detail: string }) => {
+              router.push(`/blocked?reason=${err.detail}`);
+              return null;
+          });
         }
         if (!res.ok) throw new Error(`Network response was not ok: ${res.status}`);
         return res.json();
